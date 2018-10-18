@@ -14,7 +14,6 @@ class App extends React.Component{
                 <LayOut>
                     <Switch>
                         <Route exact path='/' component={Home} />
-                        <Redirect from='*' to='/' />
                     </Switch>
                 </LayOut>
             </Router>
