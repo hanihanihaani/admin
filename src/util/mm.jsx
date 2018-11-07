@@ -30,6 +30,22 @@ class MUtil{
     doLogin() {
         window.location.href = 'login/redirect=' +  encodeURIComponent(window.location.pathname);
     }
+    // 获取URl参数
+    getUrlParam(name) {
+        // param=123&param1=456
+        let queryString = window.location.search.split('?')[1] || '',
+            reg = new RegExp("(^|&)" + name + "=([^&]*(&|$))"),
+            result = queryString.match(reg);
+        return result ? decodeURIComponent(result[2]) : null;
+    }
+    // 成功提示
+    successTips(successMsg) {
+        alert(successMsg || '操作成功！')
+    }
+    // 失败提示
+    errTips(errMsg) {
+        alert(errMsg || '失败了吗？再来一次吧！')
+    }
    
 }
 

@@ -1,18 +1,24 @@
 import React    from 'react';
 import MUtil    from 'util/mm.jsx';
+import User     from 'service/user-service.jsx';
 
 
 import './index.css';
 
-const _mm = new MUtil;
+const _mm   = new MUtil;
+const _user = new User;
 
 class Login extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
             username:'',
-            password:''
+            password:'',
+            redirect:_mm.getUrlParam('redirect') || '/'
         }
+    }
+    componentWillMount() {
+        document.title = '登录，我的后台'
     }
     onInputChange(e) {
         let inputValue = e.target.value,
@@ -22,18 +28,29 @@ class Login extends React.Component{
         })
     }
     onSubmit(e) {
-        _mm.request({
-            type:'POST',
-            url:'/manage/user/login.do',
-            data:{
-                username:this.state.username,
-                password:this.state.password,
-            }
-        }).then((res) => {
-
-        },(err) => {
-
-        })
+        let loginInfo = {
+            username:this.state.username,
+            password:this.state.password
+        },
+        checkResult = _user.checkLoginInfo(loginInfo);
+        //检验用户名和密码是否合法
+        if (checkResult.status) {
+            _user.login(loginInfo)
+            .then((res) => {
+                // console.log('this.props',this.props)
+                this.props.history.push(this.state.redirect);
+            },(errMsg) => {
+                _mm.errTips(errMsg)
+            })
+        } else {
+            _mm.errTips(checkResult.msg);
+        }
+        
+    }
+    onInputKeyUp(e) {
+        if (e.keyCode == 13) {
+            this.onSubmit();
+        }
     }
     render() {
         return (
@@ -49,6 +66,7 @@ class Login extends React.Component{
                                 className="form-control"
                                 name='username' 
                                 placeholder="请输入用户名" 
+                                onKeyUp = {e => this.onInputKeyUp(e)}
                                 onChange = {e => this.onInputChange(e)}
                                 />
                         </div>
@@ -57,6 +75,7 @@ class Login extends React.Component{
                                 className="form-control"
                                 name='password' 
                                 placeholder="请输入密码" 
+                                onKeyUp = {e => this.onInputKeyUp(e)}
                                 onChange = {e => this.onInputChange(e)}
                             />
                         </div>
