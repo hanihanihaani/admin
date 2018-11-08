@@ -46,6 +46,30 @@ class MUtil{
     errTips(errMsg) {
         alert(errMsg || '失败了吗？再来一次吧！')
     }
+    // 本地存储
+    setStorage(name,data) {
+        let dataType = typeof data;
+        if (dataType == 'object') {
+            window.localStorage.setItem(name,JSON.stringify(data))
+        } else if(['number','string','boolean'].indexOf(dataType) >= 0) {
+            window.localStorage.setItem(name,data)
+        } else {
+            alert('该类型不支持本地存储')
+        }
+    }
+    // 取出本地存储
+    getStorage(name) {
+        let data = window.localStorage.getItem(name);
+        if (data) {
+            return JSON.parse(data)
+        } else {
+            return ''
+        }
+    }
+    //删除本地存储
+    removeStorage(name) {
+        window.localStorage.removeItem(name);
+    }
    
 }
 
