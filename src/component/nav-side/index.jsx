@@ -11,7 +11,7 @@ class NavSide extends React.Component{
 
                     <li>
                         <NavLink exact activeClassName="active-menu" to="/">
-                            <i className="fa fa-dashboard"></i>首页
+                            <i className="fa fa-user-o"></i>首页
                         </NavLink>
                     </li>
 
@@ -31,7 +31,7 @@ class NavSide extends React.Component{
 
                     <li className='active'>
                         <Link to="/order">
-                            <i className="fa fa-sitemap"></i>订单<span className="fa arrow"></span>
+                            <i className="fa fa-list"></i>订单<span className="fa arrow"></span>
                         </Link>
                         <ul className="nav nav-second-level">
                             <li>
@@ -42,7 +42,7 @@ class NavSide extends React.Component{
 
                     <li className='active'>
                         <Link to="/user">
-                            <i className="fa fa-sitemap"></i>用户<span className="fa arrow"></span>
+                            <i className="fa fa-check-square-o"></i>用户<span className="fa arrow"></span>
                         </Link>
                         <ul className="nav nav-second-level">
                             <li>
