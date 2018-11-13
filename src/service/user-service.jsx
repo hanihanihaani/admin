@@ -39,7 +39,16 @@ class User{
     logout() {
         return _mm.request({
             type    : 'post',
-            url     : 'user/logout.do'
+            url     : '/user/logout.do'
+        })
+    }
+    getUserList(pageNum) {
+        return _mm.request({
+            type    : 'post',
+            url     : '/manage/user/list.do',
+            data    : {
+                pageNum:pageNum
+            }
         })
     }
 }
