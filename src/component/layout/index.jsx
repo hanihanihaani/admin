@@ -1,6 +1,6 @@
-import React from 'react';
-import NavSide from 'component/nav-side/index.jsx';
-import NavTop from 'component/nav-top/index.jsx';
+import React    from 'react';
+import NavSide  from 'component/nav-side/index.jsx';
+import NavTop   from 'component/nav-top/index.jsx';
 
 
 import './theme.css';
