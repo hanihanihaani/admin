@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Redirect, Route, Link } from 'react-ro
 
 
 import ProductList      from 'page/product/index/index.jsx';
+import ProductSave      from 'page/product/index/save.jsx';
 
 
 class ProductRouter extends React.Component{
@@ -10,6 +11,7 @@ class ProductRouter extends React.Component{
         return (
             <Switch>
                 <Route path='/product/index' component={ProductList} />
+                <Route path='/product/save' component={ProductSave} />
                 <Redirect from='/product' to='/product/index' />    
             </Switch>
         )

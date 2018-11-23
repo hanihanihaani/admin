@@ -28,6 +28,18 @@ class Product{
             data    : productInfo
         })
     }
+
+
+    // 添加商品
+    getCartgoryList(parentCategoryId) {
+        return _mm.request({
+            type    : 'post',
+            url     : '/manage/category/get_category.do',
+            data    : {
+                categoryId :parentCategoryId || 0
+            }
+        })
+    }
 }
 
 export default Product;
