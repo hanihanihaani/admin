@@ -2,7 +2,9 @@ import React            from 'react';
 import { BrowserRouter as Router, Switch, Redirect, Route, Link } from 'react-router-dom'
 import PageTitle        from 'component/page-title/index.jsx';
 import CartorySelect    from './cartory-selector.jsx';
-import FileUploader       from 'util/file-upload/index.jsx';
+import FileUploader     from 'util/file-upload/index.jsx';
+import RichEditor       from 'util/rich-editor/index.jsx';
+
 
 
 import './save.css';
@@ -16,6 +18,7 @@ class ProductSave extends React.Component{
             cartgoryId          : 0,
             parentCartgoryId    : 0,
             subImages           : [],
+            detail              : ''
         }
     }
     onCartgoryChange(cartgoryId,parentCartgoryId) {
@@ -41,6 +44,11 @@ class ProductSave extends React.Component{
             this.setState({
                 subImages:subImages
             })
+    }
+    onDetailValueChange(value) {
+        this.setState({
+            detail:value
+        })
     }
     render() {
         return (
@@ -100,7 +108,7 @@ class ProductSave extends React.Component{
                         <div className="form-group">
                             <label  className="col-md-2 control-label">商品详情</label>
                             <div className="col-md-5">
-                                <input type="number" className="form-control" placeholder="请输入商品详情"/>
+                                <RichEditor onValueChange = {(value) => this.onDetailValueChange(value)}/>
                             </div>
                         </div>
                         <div className="form-group">
