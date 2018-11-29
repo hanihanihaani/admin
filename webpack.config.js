@@ -41,7 +41,15 @@ module.exports = {
                 use: "css-loader"
             })
           },
-          //图片，使用url-loader和file-loader
+           // sass文件的处理
+          {
+            test: /\.scss$/,
+            use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader', 'sass-loader']
+            })
+          },
+            //图片，使用url-loader和file-loader
           {
             test: /\.(png|jpg|gif)$/i,
             use: [
