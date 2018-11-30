@@ -4,12 +4,14 @@ import PageTitle        from 'component/page-title/index.jsx';
 import CartorySelect    from './cartory-selector.jsx';
 import FileUploader     from 'util/file-upload/index.jsx';
 import RichEditor       from 'util/rich-editor/index.jsx';
-
+import MUtil        from 'util/mm.jsx';
+import Product      from 'service/product-service.jsx';
 
 
 import './save.css';
 
-
+const _mm   = new MUtil;
+const _product = new Product;
 
 class ProductSave extends React.Component{
     constructor(props) {
@@ -18,7 +20,12 @@ class ProductSave extends React.Component{
             cartgoryId          : 0,
             parentCartgoryId    : 0,
             subImages           : [],
-            detail              : ''
+            detail              : '',
+            name                : '',
+            subtitle            : '',
+            price               : '',
+            stock               : '',
+            status              : 1,//商品状态1位在售
         }
     }
     onCartgoryChange(cartgoryId,parentCartgoryId) {
@@ -50,6 +57,40 @@ class ProductSave extends React.Component{
             detail:value
         })
     }
+    onValueChange(e) {
+        let name = e.target.name,
+            value  = e.target.value.trim();
+            this.setState({
+                [name]:value
+            })
+    }
+    getSubImagesString() {
+        return this.state.subImages.map((images) => images.uri).join(',');
+    }
+    onSubmit(e) {
+        let product = {
+            name        : this.state.name,
+            subtitle    : this.state.subtitle,
+            cartgoryId  : parseInt(this.state.cartgoryId),
+            subImages   : this.getSubImagesString(),
+            detail      : this.state.detail,
+            price       : parseFloat(this.state.price),
+            stock       : parseInt(this.state.stock),
+            status      : this.state.status
+        },
+        productCheckResult = _product.checkProduct(product);
+        if (productCheckResult.status) {
+            _product.saveProduct(product)
+            .then((res) => {
+                _mm.successTips(res);
+                this.props.history.push('/product/index')
+            },(errMsg) => {
+                _mm.errTips(errMsg)
+            })
+        } else {
+            _mm.errTips(productCheckResult.msg)
+        }
+    }
     render() {
         return (
             <div id='page-wrapper'>
@@ -60,13 +101,17 @@ class ProductSave extends React.Component{
                         <div className="form-group">
                             <label  className="col-md-2 control-label">商品名称</label>
                             <div className="col-md-5">
-                                <input type="text" className="form-control" placeholder="请输入商品名称"/>
+                                <input type="text" className="form-control" placeholder="请输入商品名称"
+                                        name="name"
+                                        onChange={(e) => this.onValueChange(e)}/>
                             </div>
                         </div>
                         <div className="form-group">
                             <label  className="col-md-2 control-label">商品描述</label>
                             <div className="col-md-5">
-                                <input type="text" className="form-control" placeholder="请输入商品描述"/>
+                                <input type="text" className="form-control" placeholder="请输入商品描述"
+                                        name="subtitle"
+                                        onChange={(e) => this.onValueChange(e)}/>
                             </div>
                         </div>
                         <div className="form-group">
@@ -77,13 +122,17 @@ class ProductSave extends React.Component{
                         <div className="form-group">
                             <label  className="col-md-2 control-label">商品价格</label>
                             <div className="col-md-5">
-                                <input type="number" className="form-control" placeholder="请输入商品价格"/>
+                                <input type="number" className="form-control" placeholder="请输入商品价格"
+                                        name="price"
+                                        onChange={(e) => this.onValueChange(e)}/>
                             </div>
                         </div>
                         <div className="form-group">
                             <label  className="col-md-2 control-label">商品库存</label>
                             <div className="col-md-5">
-                                <input type="number" className="form-control" placeholder="请输入商品库存"/>
+                                <input type="number" className="form-control" placeholder="请输入商品库存"
+                                        name="stock"
+                                        onChange={(e) => this.onValueChange(e)}/>
                             </div>
                         </div>
                         <div className="form-group">
@@ -113,7 +162,8 @@ class ProductSave extends React.Component{
                         </div>
                         <div className="form-group">
                             <div className="col-sm-offset-2 col-sm-10">
-                                <button type="submit" className="btn btn-primary">提交</button>
+                                <button type="submit" className="btn btn-primary" 
+                                        onClick={(e) => this.onSubmit(e)}>提交</button>
                             </div>
                         </div>
                         </div>
