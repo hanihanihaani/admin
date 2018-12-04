@@ -12,13 +12,37 @@ class CartorySelect extends React.Component{
         super(props);
         this.state={
             firstCartoryList    : [],
-            firstCartoryId      : 0,
+            firstCategoryId      : 0,
             secondCartoryList   : [],
             secondCartoryId     : 0
         }
     }
     componentDidMount() {
         this.loadCartgoryList();
+    }
+    componentWillReceiveProps(nextProps){
+        let categoryIdChange        = this.props.categoryId !== nextProps.categoryId,
+            parentCategoryIdChange  = this.props.parentCategoryId !== nextProps.parentCategoryId;
+
+            // 如果数据没有发生变化的时候，直接不做处理
+            if (!categoryIdChange && !parentCategoryIdChange) {
+                return;
+            }
+            // 只有一级品类
+            if (nextProps.parentCategoryId == 0) {
+                this.setState({
+                    firstCategoryId  : nextProps.categoryId,
+                    secondCartoryId : 0
+                })
+            } else {    //有两级品类
+                this.setState({
+                    firstCategoryId  : nextProps.parentCategoryId,
+                    secondCartoryId : nextProps.categoryId,
+                },() => {
+                    parentCategoryIdChange && this.loadSecondCartgoryList()
+                })
+            }
+
     }
     loadCartgoryList() {
         _product.getCartgoryList()
@@ -31,7 +55,7 @@ class CartorySelect extends React.Component{
         })
     }
     loadSecondCartgoryList() {
-        _product.getCartgoryList(this.state.firstCartoryId)
+        _product.getCartgoryList(this.state.firstCategoryId)
         .then(res => {
             this.setState({
                 secondCartoryList:res
@@ -39,52 +63,52 @@ class CartorySelect extends React.Component{
         }, errMsg => {
             _mm.errTips(errMsg)
         })
-    }
-    onFirstCartgoryChanage(e) {
+    }   
+    onFirstCartgoryChange(e) {
         let newValue = e.target.value || 0;
         this.setState({
-            firstCartoryId      : newValue,
+            firstCategoryId     : newValue,
             secondCartoryId     : 0,
             secondCartoryList   : []
         }, () => {
             this.loadSecondCartgoryList();
-            this.onPropsCartgroyChange();
+            this.onPropsCategoryChange();
         })
     }
-    onSecondCartgoryChanage(e) {
+    onSecondCartgoryChange(e) {
         let newValue = e.target.value || 0;
         this.setState({
             secondCartoryId     : newValue,
         }, () => {
-            this.onPropsCartgroyChange();
+            this.onPropsCategoryChange();
         })
     }
     //传给父组件选中的结果
-    onPropsCartgroyChange() {
-        let cartgoryChangeble = typeof this.props.onCartgoryChange == 'function';
+    onPropsCategoryChange() {
+        let categoryChangable = typeof this.props.onCategoryChange === 'function';
         if (this.state.secondCartoryId) {
-            cartgoryChangeble && this.props.onCartgoryChange(this.state.secondCartoryId,this.state.firstCartoryId);
+            categoryChangable && this.props.onCategoryChange(this.state.secondCartoryId,this.state.firstCategoryId);
         } else {
-            cartgoryChangeble && this.props.onCartgoryChange(this.state.firstCartoryId,0);
+            categoryChangable && this.props.onCategoryChange(this.state.firstCategoryId,0);
         }
     } 
     render() {
         return (
             <div className='col-md-10'>
                 <select className='select-one'
-                    onChange = {(e) => this.onFirstCartgoryChanage(e)}>
-                    <option>请选择一级分类</option>
+                    value={this.state.firstCategoryId}
+                    onChange = {(e) => this.onFirstCartgoryChange(e)}>
+                    <option value="">请选择一级分类</option>
                     {
-                        this.state.firstCartoryList.map((cartory,i) => {
-                            return (
-                                    <option value={cartory.id} key={i}>{cartory.name}</option>
-                                )
-                            })
+                        this.state.firstCartoryList.map(
+                            (cartory,i) => <option value={cartory.id} key={i}>{cartory.name}</option>
+                            )
                     }
                 </select>
                 {this.state.secondCartoryList.length ? 
                     <select className='select-second' 
-                        onChange = {(e) => this.onSecondCartgoryChanage(e)}>
+                        value={this.state.secondCartoryId}
+                        onChange = {(e) => this.onSecondCartgoryChange(e)}>
                         <option value="">请选择二级分类</option>
                         {
                             this.state.secondCartoryList.map((cartory,i) => {

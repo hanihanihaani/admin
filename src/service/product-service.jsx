@@ -47,7 +47,7 @@ class Product{
                 msg:'商品描述不能为空'
             }
         }
-        if (typeof product.cartgoryId !== 'number' || !(product.cartgoryId > 0) ) {
+        if (typeof product.categoryId !== 'number' || !(product.categoryId > 0) ) {
             return {
                 status:false,
                 msg:'请选择商品品类'
@@ -66,6 +66,15 @@ class Product{
             }
         }
         return result;
+    }
+    getProduct(productId) {
+        return _mm.request({
+            type    : 'post',
+            url     : '/manage/product/detail.do',
+            data    : {
+                productId : productId || 0
+            }
+        });
     }
     // 保存商品
     saveProduct(product) {
