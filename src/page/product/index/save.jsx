@@ -17,8 +17,9 @@ class ProductSave extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            cartgoryId          : 0,
-            parentCartgoryId    : 0,
+            id                  : this.props.match.params.pid,
+            categoryId          : 0,
+            parentCategoryId    : 0,
             subImages           : [],
             detail              : '',
             name                : '',
@@ -28,10 +29,33 @@ class ProductSave extends React.Component{
             status              : 1,//商品状态1位在售
         }
     }
-    onCartgoryChange(cartgoryId,parentCartgoryId) {
+    componentDidMount() {
+        this.loadProduct();
+    }
+    loadProduct() {
+        if (this.state.id) {
+            _product.getProduct(this.state.id)
+            .then((res) => {
+                let images = res.subImages.split(',');
+                res.subImages = images.map((imgUri) => {
+                    return {
+                        uri:imgUri,
+                        url:res.imageHost + imgUri
+                    };
+                })
+                res.defaultDetail = res.detail;
+                    this.setState(res);
+            },errMsg => {
+                _mm.errTips(errMsg)
+            })
+        }
+    }
+    onCategoryChange(categoryId,parentCategoryId) {
+        console.log('categoryId',categoryId);
+        console.log('parentCategoryId',parentCategoryId);
         this.setState({
-            cartgoryId        : cartgoryId,
-            parentCartgoryId  : parentCartgoryId
+            categoryId        : categoryId,
+            parentCategoryId  : parentCategoryId
         })
     }
     onUploadSuccess(res) {
@@ -71,7 +95,7 @@ class ProductSave extends React.Component{
         let product = {
             name        : this.state.name,
             subtitle    : this.state.subtitle,
-            cartgoryId  : parseInt(this.state.cartgoryId),
+            categoryId  : parseInt(this.state.categoryId),
             subImages   : this.getSubImagesString(),
             detail      : this.state.detail,
             price       : parseFloat(this.state.price),
@@ -79,6 +103,9 @@ class ProductSave extends React.Component{
             status      : this.state.status
         },
         productCheckResult = _product.checkProduct(product);
+        if (this.state.id) {
+            product.id =  this.state.id;
+        }
         if (productCheckResult.status) {
             _product.saveProduct(product)
             .then((res) => {
@@ -102,6 +129,7 @@ class ProductSave extends React.Component{
                             <label  className="col-md-2 control-label">商品名称</label>
                             <div className="col-md-5">
                                 <input type="text" className="form-control" placeholder="请输入商品名称"
+                                        value={this.state.name}
                                         name="name"
                                         onChange={(e) => this.onValueChange(e)}/>
                             </div>
@@ -110,6 +138,7 @@ class ProductSave extends React.Component{
                             <label  className="col-md-2 control-label">商品描述</label>
                             <div className="col-md-5">
                                 <input type="text" className="form-control" placeholder="请输入商品描述"
+                                        value={this.state.subtitle}
                                         name="subtitle"
                                         onChange={(e) => this.onValueChange(e)}/>
                             </div>
@@ -117,12 +146,15 @@ class ProductSave extends React.Component{
                         <div className="form-group">
                             <label  className="col-md-2 control-label">所属分类</label>
                             <CartorySelect 
-                                onCartgoryChange = {(cartgoryId,parentCartgoryId) => this.onCartgoryChange(cartgoryId,parentCartgoryId)}/>
+                                categoryId = {this.state.categoryId}
+                                parentCategoryId = {this.state.parentCategoryId}
+                                onCategoryChange = {(categoryId,parentCategoryId) => this.onCategoryChange(categoryId,parentCategoryId)}/>
                         </div>
                         <div className="form-group">
                             <label  className="col-md-2 control-label">商品价格</label>
                             <div className="col-md-5">
                                 <input type="number" className="form-control" placeholder="请输入商品价格"
+                                        value={this.state.price}
                                         name="price"
                                         onChange={(e) => this.onValueChange(e)}/>
                             </div>
@@ -131,6 +163,7 @@ class ProductSave extends React.Component{
                             <label  className="col-md-2 control-label">商品库存</label>
                             <div className="col-md-5">
                                 <input type="number" className="form-control" placeholder="请输入商品库存"
+                                        value={this.state.stock}
                                         name="stock"
                                         onChange={(e) => this.onValueChange(e)}/>
                             </div>
@@ -157,7 +190,10 @@ class ProductSave extends React.Component{
                         <div className="form-group">
                             <label  className="col-md-2 control-label">商品详情</label>
                             <div className="col-md-5">
-                                <RichEditor onValueChange = {(value) => this.onDetailValueChange(value)}/>
+                                <RichEditor 
+                                    detail={this.state.detail}
+                                    defaultDetail = {this.state.defaultDetail}
+                                    onValueChange = {(value) => this.onDetailValueChange(value)}/>
                             </div>
                         </div>
                         <div className="form-group">
